@@ -1,17 +1,17 @@
-# MaixCAM Host Scripts
+# MaixCAM 上位机脚本
 
-This folder contains the upper-computer vision scripts for MaixCAM Pro.
+这个目录保存 MaixCAM Pro 上运行的视觉识别和串口控制脚本。
 
-## Files
+## 文件说明
 
-| File | Role |
+| 文件 | 作用 |
 | --- | --- |
-| `camera1.py` | Primary two-axis vision controller. Outputs full direction commands and `missing`. |
-| `camera2.py` | Secondary horizontal fine-adjustment controller. Outputs only `left only`, `right only`, and `stop`. |
+| `camera1.py` | 第一台相机脚本，用于二维视觉控制，可以输出完整方向指令和 `missing`。 |
+| `camera2.py` | 第二台相机脚本，用于水平微调，只输出 `left only`、`right only` 和 `stop`。 |
 
-## Runtime
+## 运行依赖
 
-The scripts use:
+脚本主要使用：
 
 - `maix.camera`
 - `maix.display`
@@ -20,7 +20,7 @@ The scripts use:
 - OpenCV `cv2`
 - NumPy
 
-UART defaults:
+默认串口参数：
 
 ```python
 UART_DEVICE = "/dev/ttyS0"
@@ -28,12 +28,12 @@ UART_BAUD = 115200
 UART_SEND_PERIOD_MS = 50
 ```
 
-## Deployment
+## 部署方式
 
-Copy the selected script to the MaixCAM device and run it from the MaixPy environment. Keep UART debug text disabled for normal lower-computer control:
+将需要运行的脚本复制到 MaixCAM 设备，在 MaixPy 环境中运行即可。正常控制下位机时，建议保持调试文本关闭：
 
 ```python
 UART_SEND_DEBUG_TEXT = False
 ```
 
-If you need to inspect command decisions on screen, use the display overlay and console output instead of sending verbose text to the ESP32-S3.
+如果需要观察指令判断过程，可以看屏幕叠加显示和控制台输出，不建议把完整调试文本发给 ESP32-S3。

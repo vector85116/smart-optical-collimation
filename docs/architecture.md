@@ -1,43 +1,43 @@
-# System Architecture
+# 系统架构
 
-This project is organized as a two-level closed-loop optical collimation system.
+本项目采用“视觉上位机 + 电机下位机”的两级闭环结构，用 MaixCAM Pro 完成图像识别和方向判断，用 ESP32-S3 完成串口指令解析和电机执行。
 
-## Upper Computer: MaixCAM
+## 上位机：MaixCAM
 
-The MaixCAM script captures a 640 x 480 image, optionally crops a configured ROI, detects the black target ring, detects the red laser spot, and converts the pixel offset into a motion command.
+MaixCAM 脚本负责采集 640 x 480 图像，根据配置裁剪 ROI，识别黑色靶环和红色激光点，并把像素偏差转换成方向控制指令。
 
-Main vision stages:
+主要视觉流程如下：
 
-1. Crop the configured ROI to reduce noise and improve speed.
-2. Detect the black ring with Hough circle detection.
-3. Refine the ring with full-resolution local detection and edge fitting.
-4. Detect the red laser spot with LAB color thresholding.
-5. Restrict laser detection to the valid disk inside the ring.
-6. Smooth ring and spot positions to avoid command jitter.
-7. Convert offset signs into UART command text.
+1. 裁剪配置好的 ROI，减少背景干扰并提高处理速度。
+2. 使用 Hough 圆检测初步定位黑色靶环。
+3. 在原图局部区域进行二次精定位和边缘拟合，提高圆心稳定性。
+4. 使用 LAB 颜色阈值识别红色激光点。
+5. 将激光点识别范围限制在靶环内部，过滤靶环外的红色噪声。
+6. 对靶环中心和激光点位置进行平滑，降低指令抖动。
+7. 根据偏差方向生成串口文本指令。
 
-## Lower Computer: ESP32-S3
+## 下位机：ESP32-S3
 
-The ESP32-S3 receives commands from USB, HOST1 UART, or HOST2 UART. It parses the command text and sends EMM V5 driver frames over the motor UART.
+ESP32-S3 可以从 USB、HOST1 UART 或 HOST2 UART 接收命令。固件解析文本指令后，通过电机串口向 EMM V5 驱动器发送控制帧。
 
-The firmware supports:
+当前固件支持：
 
-- Primary motor group `M1M2`: pan and tilt correction.
-- Secondary motor group `M3M4`: compensation or horizontal fine adjustment.
-- Command prefixes such as `g1` and `g2` for manual group selection.
-- `missing` search mode for target loss recovery.
-- GPIO force-pause and restart buttons.
+- 第一组电机 `M1M2`：用于左右和上下二维调整。
+- 第二组电机 `M3M4`：用于补偿或第二阶段水平微调。
+- `g1`、`g2` 等命令前缀，便于手动指定电机组。
+- `missing` 目标丢失搜索模式。
+- 外部强制暂停按键和程序重启按键。
 
-## Control Loop
+## 闭环控制流程
 
 ```text
-Image frame
-  -> ring center and laser spot detection
-  -> dx/dy error calculation
-  -> direction command
-  -> ESP32-S3 command parser
-  -> motor pulse movement
-  -> next image frame
+图像帧
+  -> 识别靶环中心和激光点
+  -> 计算 dx / dy 偏差
+  -> 生成方向指令
+  -> ESP32-S3 解析指令
+  -> 电机按固定脉冲步进
+  -> 进入下一帧判断
 ```
 
-The current control law is step-based rather than PID-based. Each command causes a fixed pulse movement. This keeps the first version stable and easy to tune; future versions can add proportional pulse scaling or PID control.
+当前控制方式是固定步长控制，不是 PID 控制。每收到一次方向指令，电机移动固定脉冲数。这样第一版系统更稳定、更容易调试；后续可以继续扩展为按误差大小动态调整脉冲数，或者加入 PID 控制。

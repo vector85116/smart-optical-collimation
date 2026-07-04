@@ -1,5 +1,7 @@
-# Archive
+# 历史版本
 
-This folder keeps historical experiment scripts for reference.
+这个目录用于保存 MaixCAM 视觉代码的历史实验版本，方便回看不同阶段的参数和算法变化。
 
-The active MaixCAM scripts are in `host/maixcam/`. Prefer editing those files for future development. Historical files are kept here so earlier tuning stages are not lost, but Git commit history should be the main version record from this point on.
+当前建议维护和运行的上位机脚本在 `host/maixcam/` 目录下。后续开发时优先修改那里的 `camera1.py` 和 `camera2.py`。
+
+从现在开始，版本变化主要依靠 Git 提交记录管理；这里保留早期脚本，只作为参数调试和方案对比的参考。

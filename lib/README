@@ -1,46 +1,16 @@
+这个目录用于存放项目私有库。
 
-This directory is intended for project specific (private) libraries.
-PlatformIO will compile them to static libraries and link into the executable file.
+PlatformIO 会自动扫描 `lib/` 目录中的库，并在构建时将它们编译、链接到最终固件中。
 
-The source code of each library should be placed in a separate directory
-("lib/your_library_name/[Code]").
+推荐的目录结构如下：
 
-For example, see the structure of the following example libraries `Foo` and `Bar`:
-
-|--lib
-|  |
-|  |--Bar
-|  |  |--docs
-|  |  |--examples
-|  |  |--src
-|  |     |- Bar.c
-|  |     |- Bar.h
-|  |  |- library.json (optional. for custom build options, etc) https://docs.platformio.org/page/librarymanager/config.html
-|  |
-|  |--Foo
-|  |  |- Foo.c
-|  |  |- Foo.h
-|  |
-|  |- README --> THIS FILE
-|
-|- platformio.ini
-|--src
-   |- main.c
-
-Example contents of `src/main.c` using Foo and Bar:
-```
-#include <Foo.h>
-#include <Bar.h>
-
-int main (void)
-{
-  ...
-}
-
+```text
+lib/
+└── your_library_name/
+    ├── src/
+    │   ├── your_library.cpp
+    │   └── your_library.h
+    └── library.json
 ```
 
-The PlatformIO Library Dependency Finder will find automatically dependent
-libraries by scanning project source files.
-
-More information about PlatformIO Library Dependency Finder
-- https://docs.platformio.org/page/librarymanager/ldf.html
+当前项目的电机驱动代码暂时直接放在 `src/EmmV5.cpp` 和 `include/EmmV5.h` 中。如果后续电机协议、控制算法或串口通信模块继续变大，可以再拆分到 `lib/` 目录中，形成独立库。

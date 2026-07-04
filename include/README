@@ -1,37 +1,20 @@
+这个目录用于存放项目头文件。
 
-This directory is intended for project header files.
+头文件通常包含 C/C++ 声明、宏定义、枚举、结构体和函数接口，供 `src/` 目录中的多个源文件共同使用。
 
-A header file is a file containing C declarations and macro definitions
-to be shared between several project source files. You request the use of a
-header file in your project source file (C, C++, etc) located in `src` folder
-by including it, with the C preprocessing directive `#include'.
+在本项目中，`EmmV5.h` 定义了 EMM V5 电机驱动器相关的协议接口，例如：
 
-```src/main.c
+- 使能电机。
+- 位置模式控制。
+- 速度模式控制。
+- 立即停止。
+- 读取驱动器参数。
+- 回零相关操作。
 
-#include "header.h"
+在源文件中可以通过下面方式引用头文件：
 
-int main (void)
-{
- ...
-}
+```cpp
+#include "EmmV5.h"
 ```
 
-Including a header file produces the same results as copying the header file
-into each source file that needs it. Such copying would be time-consuming
-and error-prone. With a header file, the related declarations appear
-in only one place. If they need to be changed, they can be changed in one
-place, and programs that include the header file will automatically use the
-new version when next recompiled. The header file eliminates the labor of
-finding and changing all the copies as well as the risk that a failure to
-find one copy will result in inconsistencies within a program.
-
-In C, the convention is to give header files names that end with `.h'.
-
-Read more about using header files in official GCC documentation:
-
-* Include Syntax
-* Include Operation
-* Once-Only Headers
-* Computed Includes
-
-https://gcc.gnu.org/onlinedocs/cpp/Header-Files.html
+把公共接口放在头文件中，可以避免在多个源文件里重复声明同一批函数，也方便后续维护电机驱动协议。

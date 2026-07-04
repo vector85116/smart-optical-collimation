@@ -1,35 +1,35 @@
-# Demo Record Template
+# 演示记录模板
 
-Use this file to record repeatable demo results.
+这个文件用于记录可复现实验结果，方便后续写报告或向老师展示。
 
-## Test Environment
+## 测试环境
 
-| Item | Value |
+| 项目 | 数值 |
 | --- | --- |
-| Date | TBD |
-| Operator | TBD |
-| MaixCAM script | `camera1.py` / `camera2.py` |
-| ESP32-S3 firmware commit | TBD |
-| Target distance | TBD |
-| Lighting condition | TBD |
+| 日期 | 待填写 |
+| 操作人 | 待填写 |
+| MaixCAM 脚本 | `camera1.py` / `camera2.py` |
+| ESP32-S3 固件提交号 | 待填写 |
+| 靶面距离 | 待填写 |
+| 光照条件 | 待填写 |
 
-## Results
+## 测试结果
 
-| Trial | Initial error | Final error | Convergence time | Notes |
+| 次数 | 初始误差 | 最终误差 | 收敛时间 | 备注 |
 | ---: | ---: | ---: | ---: | --- |
-| 1 | TBD px | TBD px | TBD s | TBD |
-| 2 | TBD px | TBD px | TBD s | TBD |
-| 3 | TBD px | TBD px | TBD s | TBD |
+| 1 | 待测 px | 待测 px | 待测 s | 待填写 |
+| 2 | 待测 px | 待测 px | 待测 s | 待填写 |
+| 3 | 待测 px | 待测 px | 待测 s | 待填写 |
 
-## Observations
+## 观察记录
 
-- Vision FPS: TBD.
-- UART command period: 50 ms.
-- Missing-target recovery: TBD.
-- Most sensitive parameter: TBD.
+- 视觉识别帧率：待测。
+- UART 指令周期：50 ms。
+- 目标丢失恢复：待测。
+- 最敏感的调参项：待填写。
 
-## Media To Add
+## 建议补充的展示素材
 
-- `assets/system_photo.jpg`: full hardware photo.
-- `assets/demo.gif`: short closed-loop alignment demo.
-- `assets/result_screenshot.jpg`: MaixCAM overlay screenshot.
+- `assets/system_photo.jpg`：完整硬件系统照片。
+- `assets/demo.gif`：闭环自动准直短动图。
+- `assets/result_screenshot.jpg`：MaixCAM 识别叠加显示截图。

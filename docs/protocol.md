@@ -1,36 +1,36 @@
-# UART Protocol
+# 串口协议
 
-The MaixCAM upper-computer scripts communicate with the ESP32-S3 lower computer by sending one ASCII text command per line.
+MaixCAM 上位机脚本通过 UART 与 ESP32-S3 下位机通信。通信内容是一行一条的 ASCII 文本指令。
 
-## Serial Settings
+## 串口参数
 
-| Item | Value |
+| 项目 | 数值 |
 | --- | --- |
-| Baud rate | 115200 |
-| Format | 8N1 |
-| Line ending | `\n` recommended |
-| Host script send period | 50 ms |
+| 波特率 | 115200 |
+| 数据格式 | 8N1 |
+| 换行符 | 建议使用 `\n` |
+| 上位机发送周期 | 50 ms |
 
-The ESP32-S3 firmware also accepts commands when no line ending is sent, using a short receive timeout.
+ESP32-S3 固件也兼容没有换行符的情况：当接收缓冲区在短时间内没有新字节进入时，会自动处理当前命令。
 
-## Commands
+## 指令列表
 
-| Command | Meaning |
+| 指令 | 含义 |
 | --- | --- |
-| `left,up` | Move pan left and tilt up |
-| `left,down` | Move pan left and tilt down |
-| `right,up` | Move pan right and tilt up |
-| `right,down` | Move pan right and tilt down |
-| `left only` | Move pan left only |
-| `right only` | Move pan right only |
-| `up only` | Move tilt up only |
-| `down only` | Move tilt down only |
-| `stop` | Stop the selected motor group |
-| `missing` | Start or continue target-loss search |
+| `left,up` | 左右轴向左，上下轴向上 |
+| `left,down` | 左右轴向左，上下轴向下 |
+| `right,up` | 左右轴向右，上下轴向上 |
+| `right,down` | 左右轴向右，上下轴向下 |
+| `left only` | 只向左调整 |
+| `right only` | 只向右调整 |
+| `up only` | 只向上调整 |
+| `down only` | 只向下调整 |
+| `stop` | 停止当前电机组 |
+| `missing` | 目标丢失，启动或保持搜索模式 |
 
-## Group Prefixes
+## 电机组前缀
 
-Manual commands can specify a motor group:
+手动调试时，可以在指令前加电机组前缀：
 
 ```text
 g1 left,up
@@ -39,20 +39,20 @@ m1m2 stop
 m3m4 stop
 ```
 
-If no prefix is supplied, each input channel uses its default group.
+如果不加前缀，则不同输入通道会使用各自默认电机组。
 
-## Host Roles
+## 上位机输入角色
 
-| Input | Default group | Intended role |
+| 输入通道 | 默认电机组 | 作用 |
 | --- | --- | --- |
-| USB serial | `M1M2` | Debug and manual test |
-| HOST1 UART | `M1M2` | First MaixCAM / primary adjustment |
-| HOST2 UART | `M3M4` | Second MaixCAM / compensation |
+| USB 串口 | `M1M2` | 调试和手动测试 |
+| HOST1 UART | `M1M2` | 第一台 MaixCAM，主调整 |
+| HOST2 UART | `M3M4` | 第二台 MaixCAM，补偿或微调 |
 
-`camera1.py` can output all two-axis commands and `missing`. `camera2.py` intentionally limits UART output to `left only`, `right only`, and `stop`.
+`camera1.py` 可以输出完整二维方向指令和 `missing`。`camera2.py` 刻意限制为只输出 `left only`、`right only` 和 `stop`，用于第二阶段水平微调。
 
-## Stop Behavior
+## 停止逻辑
 
-The host scripts send several consecutive `stop` commands before stopping UART output. This ensures the lower computer receives a stable final stop state.
+上位机在判断已经对准时，会连续发送多次 `stop` 后再停止发送串口指令。这样可以提高下位机收到停止指令的可靠性。
 
-The lower computer repeats low-level stop frames to the motor driver, keeping holding torque after stopping.
+下位机执行停止时，会重复发送底层停止帧给电机驱动器。停止后不会关闭使能，电机保持力矩。

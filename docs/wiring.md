@@ -1,44 +1,44 @@
-# Wiring Notes
+# 接线说明
 
-These notes reflect the current constants in `src/main.cpp`.
+本说明对应当前 `src/main.cpp` 中的引脚和电机地址配置。
 
-## ESP32-S3 UART Pins
+## ESP32-S3 串口引脚
 
-| Function | ESP32-S3 RX | ESP32-S3 TX | Baud |
+| 功能 | ESP32-S3 RX | ESP32-S3 TX | 波特率 |
 | --- | ---: | ---: | ---: |
-| HOST1 / first MaixCAM | GPIO38 | GPIO39 | 115200 |
-| HOST2 / second MaixCAM | GPIO13 | GPIO14 | 115200 |
-| EMM V5 motor drivers | GPIO18 | GPIO17 | 115200 |
+| HOST1 / 第一台 MaixCAM | GPIO38 | GPIO39 | 115200 |
+| HOST2 / 第二台 MaixCAM | GPIO13 | GPIO14 | 115200 |
+| EMM V5 电机驱动器 | GPIO18 | GPIO17 | 115200 |
 
-Connect UART crosswise:
+UART 接线需要交叉连接：
 
 ```text
-ESP32 TX -> device RX
-ESP32 RX <- device TX
+ESP32 TX -> 设备 RX
+ESP32 RX <- 设备 TX
 GND      -> GND
 ```
 
-## Motor Addresses
+## 电机地址
 
-| Motor | Address | Role |
+| 电机 | 地址 | 作用 |
 | --- | ---: | --- |
-| M1 | 1 | Primary pan axis |
-| M2 | 2 | Primary tilt axis |
-| M3 | 3 | Secondary pan axis |
-| M4 | 4 | Secondary tilt axis |
+| M1 | 1 | 第一组左右轴 |
+| M2 | 2 | 第一组上下轴 |
+| M3 | 3 | 第二组左右轴 |
+| M4 | 4 | 第二组上下轴 |
 
-## Buttons
+## 外部按键
 
-| GPIO | Function | Wiring |
+| GPIO | 功能 | 接线方式 |
 | ---: | --- | --- |
-| GPIO6 | Force pause | Button to GND, internal pull-up |
-| GPIO7 | Program restart | Button to GND, internal pull-up |
+| GPIO6 | 强制暂停 | 按键另一端接 GND，使用内部上拉 |
+| GPIO7 | 程序重启 | 按键另一端接 GND，使用内部上拉 |
 
-## Bring-Up Checklist
+## 上电检查步骤
 
-1. Power motor drivers and ESP32-S3 with a shared ground.
-2. Confirm each EMM V5 driver address matches the table above.
-3. Open the ESP32-S3 USB serial monitor at `115200`.
-4. Send `left only`, `right only`, `up only`, `down only`, and `stop`.
-5. If directions are reversed, adjust the direction constants in `src/main.cpp`.
-6. Connect the MaixCAM UART and confirm commands appear in the ESP32-S3 serial log.
+1. 给 ESP32-S3 和电机驱动器供电，并确保所有模块共地。
+2. 确认每个 EMM V5 驱动器地址与上表一致。
+3. 打开 ESP32-S3 的 USB 串口监视器，波特率设置为 `115200`。
+4. 依次发送 `left only`、`right only`、`up only`、`down only` 和 `stop`，确认方向正确。
+5. 如果方向反了，修改 `src/main.cpp` 中对应方向常量。
+6. 连接 MaixCAM UART，确认 ESP32-S3 串口日志中能看到上位机指令。

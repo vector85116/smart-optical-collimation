@@ -1,85 +1,85 @@
-# Smart Optical Collimation
+# 智能光路准直系统
 
-基于 MaixCAM Pro 和 ESP32-S3 的智能光路准直系统。系统通过视觉识别黑色靶环中心与红色激光点位置偏差，经 UART 向下位机发送方向指令，驱动双轴电机完成自动准直；当目标丢失时，下位机进入扩展方形搜索模式恢复目标。
+本项目是一个基于 MaixCAM Pro 和 ESP32-S3 的智能光路准直系统。系统通过视觉识别黑色靶环中心与红色激光点的位置偏差，经 UART 向下位机发送方向指令，驱动双轴电机完成自动准直；当目标丢失时，下位机会进入逐渐扩大的方形搜索模式，尝试重新找回目标。
 
-## Project Highlights
+## 项目亮点
 
 - **视觉闭环控制**：MaixCAM 识别靶环中心和激光点，计算像素偏差并输出方向指令。
-- **双相机协同**：`camera1.py` 用于二维粗/细准直，`camera2.py` 用于第二阶段水平微调。
-- **下位机实时执行**：ESP32-S3 解析 `left,up`、`stop`、`missing` 等串口协议并控制两组电机。
+- **双相机协同**：`camera1.py` 用于二维粗准直和细准直，`camera2.py` 用于第二阶段水平微调。
+- **下位机实时执行**：ESP32-S3 解析 `left,up`、`stop`、`missing` 等串口指令，并控制两组电机动作。
 - **目标丢失恢复**：收到 `missing` 后，下位机控制第一组电机进行逐渐扩大的方形搜索。
-- **工程化整理**：包含上位机代码、下位机固件、串口协议、接线说明和标定流程。
+- **工程化整理**：仓库包含上位机视觉代码、下位机固件、串口协议、接线说明和标定流程。
 
-## Repository Layout
+## 仓库结构
 
 ```text
 .
-├── src/                    # ESP32-S3 PlatformIO firmware
-├── include/                # Motor driver protocol header
-├── host/maixcam/           # MaixCAM upper-computer vision scripts
-├── docs/                   # Architecture, protocol, wiring, calibration
-├── archive/                # Historical MaixCAM experiment versions
-├── assets/                 # Demo images/GIFs, system photos
-└── platformio.ini          # PlatformIO board configuration
+├── src/                    # ESP32-S3 下位机固件
+├── include/                # 电机驱动协议头文件
+├── host/maixcam/           # MaixCAM 上位机视觉脚本
+├── docs/                   # 架构、协议、接线和标定文档
+├── archive/                # MaixCAM 历史实验版本
+├── assets/                 # 演示图片、动图和系统照片
+└── platformio.ini          # PlatformIO 开发板配置
 ```
 
-## System Flow
+## 系统流程
 
 ```text
-Laser target image
+激光靶面图像
        ↓
-MaixCAM vision detection
+MaixCAM 视觉识别
        ↓
-Ring center / laser spot offset
+计算靶环中心与激光点偏差
        ↓
-Direction command over UART
+通过 UART 发送方向指令
        ↓
-ESP32-S3 command parser
+ESP32-S3 解析指令
        ↓
-EMM V5 motor drivers
+EMM V5 电机驱动器执行动作
        ↓
-Two-axis optical adjustment
+双轴光路调整
 ```
 
-## Current Hardware
+## 当前硬件组成
 
-| Module | Role |
+| 模块 | 作用 |
 | --- | --- |
-| MaixCAM Pro | Vision detection and UART command output |
-| ESP32-S3 DevKitC-1 | Lower-computer command parsing and motor control |
-| EMM V5 motor drivers | Stepper motor position control |
-| Two motor groups | Primary two-axis adjustment and secondary compensation |
+| MaixCAM Pro | 视觉识别与 UART 指令输出 |
+| ESP32-S3 DevKitC-1 | 下位机指令解析与电机控制 |
+| EMM V5 电机驱动器 | 步进电机位置控制 |
+| 两组电机 | 第一组完成二维调整，第二组用于补偿或微调 |
 
-## Quick Start
+## 快速开始
 
-### Firmware
+### 下位机固件
 
-Install PlatformIO, then build the ESP32-S3 firmware:
+安装 PlatformIO 后，在项目根目录编译 ESP32-S3 固件：
 
 ```powershell
 platformio run
 ```
 
-Upload after selecting the correct serial port:
+选择正确串口后上传固件：
 
 ```powershell
 platformio run --target upload
 ```
 
-### MaixCAM Host
+### MaixCAM 上位机
 
-Copy one of the MaixCAM scripts to the device and run it:
+将下面其中一个脚本复制到 MaixCAM 设备并运行：
 
 ```text
 host/maixcam/camera1.py
 host/maixcam/camera2.py
 ```
 
-`camera1.py` outputs full two-axis direction commands. `camera2.py` only outputs horizontal correction commands: `left only`, `right only`, and `stop`.
+`camera1.py` 输出完整二维方向指令；`camera2.py` 只输出水平微调指令：`left only`、`right only` 和 `stop`。
 
-## UART Protocol
+## 串口协议
 
-The host sends one text command per line at `115200 bps`.
+上位机以 `115200 bps` 通过 UART 发送文本指令，每条指令建议以换行结束。
 
 ```text
 left,up
@@ -94,28 +94,28 @@ stop
 missing
 ```
 
-See [docs/protocol.md](docs/protocol.md) for details.
+详细说明见 [串口协议文档](docs/protocol.md)。
 
-## Demo Metrics
+## 演示指标
 
-These values should be filled after a stable lab run:
+下面的数据需要在稳定实验环境中实测后填写：
 
-| Metric | Value |
+| 指标 | 数值 |
 | --- | --- |
-| Vision FPS | TBD |
-| UART command period | 50 ms |
-| Stable collimation error | TBD px |
-| Average convergence time | TBD s |
-| Missing-target recovery | Supported |
+| 视觉识别帧率 | 待测 |
+| UART 指令周期 | 50 ms |
+| 稳定后准直误差 | 待测 px |
+| 平均收敛时间 | 待测 s |
+| 目标丢失恢复 | 已支持 |
 
-## Documentation
+## 项目文档
 
-- [System architecture](docs/architecture.md)
-- [UART protocol](docs/protocol.md)
-- [Wiring notes](docs/wiring.md)
-- [Calibration workflow](docs/calibration.md)
-- [Demo record template](docs/demo.md)
+- [系统架构](docs/architecture.md)
+- [串口协议](docs/protocol.md)
+- [接线说明](docs/wiring.md)
+- [标定流程](docs/calibration.md)
+- [演示记录模板](docs/demo.md)
 
-## Status
+## 当前状态
 
-The firmware currently builds successfully with PlatformIO for `esp32-s3-devkitc-1`. The MaixCAM scripts are copied from the working experiment versions and organized for repository use.
+下位机固件已经可以在 PlatformIO 中针对 `esp32-s3-devkitc-1` 成功编译。MaixCAM 上位机脚本已经从现有实验代码整理进仓库，后续可以继续补充系统照片、演示动图和实测指标。
